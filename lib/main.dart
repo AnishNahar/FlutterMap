@@ -15,17 +15,16 @@ class MyApp extends StatelessWidget {
     print('1--------');
     return MaterialApp(
       title: 'Flutter Google Maps Demo',
-      home: MapSample(), //Center(child: Text('hello')),// MapSample(),
+      home: MapSample(),
     );
   }
 }
-Future<List<Marker>> _fetchContacts() async {
+Future _fetchContacts() async {
   List<Marker> Allmarkers=[];
   if (!await FlutterContacts.requestPermission(readonly: true)) {
     print('permission denied');
   } else {
     final contacts = await FlutterContacts.getContacts(withProperties: true);
-    contacts.removeRange(8, contacts.length-1);
     print(contacts.length);
     int i = 0;
     for (var contact in contacts) {
@@ -65,7 +64,7 @@ class MapSampleState extends State<MapSample> {
     zoom: 15,
   );
 
-  late Future<List<Marker>> Allmarkers;
+  List <Marker> Allmarkers = [];
   List<Contact> _contacts = [];
   bool _permissionDenied = false;
 
@@ -73,13 +72,7 @@ class MapSampleState extends State<MapSample> {
   void initState() {
     super.initState();
     print('2---------');
-    // Allmarkers = await _fetchContacts();
-    Task {
-
-    }
-    List<Marker> list = _fetchContacts();
-    print(list.length);
-    print('3---------');
+    _fetchContacts();
 
   }
 
@@ -92,7 +85,8 @@ class MapSampleState extends State<MapSample> {
             initialCameraPosition: _kGooglePlex,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
-            }
+            },
+          markers: Set.from(Allmarkers),
     //          markers: FutureBuilder<Set<Marker>> (
     // future:Allmarkers,
     // builder: (context,snapshots){
