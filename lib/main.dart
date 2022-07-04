@@ -14,43 +14,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     print('1--------');
     return MaterialApp(
-      title: 'Flutter Google Maps Demo',
+      title: 'Flutter Google Maps ',
       home: MapSample(),
     );
   }
 }
-Future _fetchContacts() async {
-  List<Marker> Allmarkers=[];
-  if (!await FlutterContacts.requestPermission(readonly: true)) {
-    print('permission denied');
-  } else {
-    final contacts = await FlutterContacts.getContacts(withProperties: true);
-    print(contacts.length);
-    int i = 0;
-    for (var contact in contacts) {
-      print(contact.addresses.toString());
-      if (contact.addresses.isNotEmpty) {
-        print('In if condition :: contacts${contact}');
-        // Position position =;
-        List<Location> locations = await locationFromAddress(contact.addresses[0].address);
-        print(locations);
-        Allmarkers.add(
-          Marker(
-            markerId: MarkerId(i.toString()),
-            draggable: false,
-            onTap: () {
-              print('tapped');
-            },
-            position: LatLng(locations[0].longitude,locations[0].latitude),
-          ),
-        );
-        print('i: ${i}');
-        i++;
-      }
-    }
-  }
-  return Allmarkers;
-}
+
+
+
 class MapSample extends StatefulWidget {
   @override
   State<MapSample> createState() => MapSampleState();
@@ -76,7 +47,58 @@ class MapSampleState extends State<MapSample> {
 
   }
 
+  Future _fetchContacts() async {
+    //List<Marker> Allmarkers=[];
+    if (!await FlutterContacts.requestPermission(readonly: true)) {
+      print('permission denied');
+    } else {
+      final contacts = await FlutterContacts.getContacts(withProperties: true);
+      print(contacts.length);
+      int i = 0;
+      for (var contact in contacts) {
+        print(contact.addresses.toString());
+        if (contact.addresses.isNotEmpty) {
+          print('In if condition :: contacts${contact}');
+          // Position position =;
+          List<Location> locations = await locationFromAddress(contact.addresses[0].address);
+          double lati=0,longi=0;
+          if(locations.isNotEmpty)
+            {
+              lati=locations[0].latitude;
+              longi=locations[0].longitude;
+            }
+          print(locations);
+          Allmarkers.add(
+            Marker(
+              markerId: MarkerId(i.toString()),
+              draggable: false,
+              onTap: () {
+                print('tapped');
+              },
+              position: LatLng(lati,longi),
+            ),
+          );
 
+          // Allmarkers.add(
+          //   Marker(
+          //     markerId: MarkerId(i.toString()),
+          //     draggable: false,
+          //     onTap: () {
+          //       print('tapped');
+          //     },
+          //     position: LatLng(22.696625, 75.830434),
+          //   ),
+          // );
+          print('i: ${i}');
+          i++;
+        }
+      }
+
+    }
+    print(" AllMarker Anish Count $Allmarkers");
+
+    setState(() {} );
+  }
 
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -87,16 +109,6 @@ class MapSampleState extends State<MapSample> {
               _controller.complete(controller);
             },
           markers: Set.from(Allmarkers),
-    //          markers: FutureBuilder<Set<Marker>> (
-    // future:Allmarkers,
-    // builder: (context,snapshots){
-    //   if(snapshots.hasData){
-    //     return Set.from(snapshots.data);
-    // }else if(snapshots.hasError)
-    //   {
-    //     return Text('${snapshots.error}');
-    //   }
-    // },
     )
     );
   }
